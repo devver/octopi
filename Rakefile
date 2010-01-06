@@ -5,11 +5,17 @@ require 'yaml'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "octopi"
-    gem.summary = %Q{A Ruby interface to GitHub API v2}
-    gem.email = "felipe.coury@gmail.com"
-    gem.homepage = "http://github.com/fcoury/octopi"
-    gem.authors = ["Felipe Coury"]
+    gem.name     = "devver-octopi"
+    gem.summary  = %Q{A Ruby interface to GitHub API v2 (Devver Fork)}
+    gem.description = <<END
+This is a gem of the Devver fork of Octopi (a Github API library), which can be
+found at http://github.com/fcoury/octopi.  This gem exists solely to enable us
+to use patches which have not (yet) been rolled into the official Octopi gem.
+You should almost certainly use the official Octopi gem instead of this one.
+END
+    gem.email    = "devs@devver.net"
+    gem.homepage = "http://github.com/devver/octopi"
+    gem.authors  = ["Felipe Coury"]
     gem.rubyforge_project = "octopi"
     gem.add_dependency('nokogiri', '>= 1.3.1')
     gem.add_dependency('httparty', '>= 0.4.5')
