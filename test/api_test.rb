@@ -37,6 +37,21 @@ class AuthenticatedTest < Test::Unit::TestCase
       end
     end
   end
+
+  context "invalid user" do
+    
+    should "raise Octopi::InvalidLogin" do
+      # This simulates the [bad] response returned from the GitHub API due to bug 569
+      # http://support.github.com/discussions/site/569-using-the-v2-api-attempting-to-show-a-nonexistent-user-gives-a-500-error
+      FakeWeb.register_uri(:get, "http://#{yaml_api}/user/show/invalid_user?", 
+                           :status => ["404", "Not Found"],
+                           :body => "<html>:\n</html>")
+      assert_raise Octopi::NotFound do
+        Api.api.get("/user/show/invalid_user?", {})
+      end
+    end
+
+  end
   
   context "keys" do
     should "not be able to see keys if not authenticated" do

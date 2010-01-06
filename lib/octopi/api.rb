@@ -157,6 +157,26 @@ module Octopi
     end
 
     private
+
+    # http://support.github.com/discussions/site/569-using-the-v2-api-attempting-to-show-a-nonexistent-user-gives-a-500-error
+    # Accessing http://github.com/api/v2/json/user/show/USER when USER is a 
+    # non-existent user will not return YAML as expected, but rather return
+    # HTML. HTTParty will attempt to parse the HTML as YAML, which raises
+    # an ArgumentError. Until this bug is fixed, we must rescue the error
+    # in this case and return a 404 response.
+    def handle_github_api_bug_569(path, format)
+      yield
+    rescue ArgumentError => error
+      if error.message =~ /syntax error/ && path=~/user\/show/ && format==:yaml
+        message =<<"__"
+Artificial response created on #{__FILE__}:#{__LINE__} due to GitHub API bug 569.
+See comments for details.
+__
+        HTTParty::Response.new({}, message, 404, message, {})
+      else
+        raise
+      end
+    end
     
     def method_missing(method, *args)
       api.send(method, *args)
@@ -176,10 +196,14 @@ module Octopi
         key = "#{Api.api.class.to_s}:#{path}"
         resp = if cache
           APICache.get(key, :cache => 61) do
-            yield(path, params, format, auth_parameters)
+            handle_github_api_bug_569(path, format) do
+              yield(path, params, format, auth_parameters)
+            end
           end
         else
-          yield(path, params, format, auth_parameters)
+          handle_github_api_bug_569(path, format) do
+            yield(path, params, format, auth_parameters)
+          end
         end
       rescue Net::HTTPBadResponse
         raise RetryableAPIError
