@@ -193,7 +193,7 @@ __
         end
       end
       begin
-        key = "#{Api.api.class.to_s}:#{path}"
+        key = "#{Api.api.class.to_s}:#{path} #{format} #{params.to_a.sort_by{|x|x.to_s}} #{auth_parameters.to_a.sort_by{|x|x.to_s}}"
         resp = if cache
           APICache.get(key, :cache => 61) do
             handle_github_api_bug_569(path, format) do
