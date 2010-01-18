@@ -193,7 +193,7 @@ __
         end
       end
       begin
-        key = "#{Api.api.class.to_s}:#{path}:#{format}:#{params.inspect}:#{auth_parameters.inspect}"
+        key = "#{Api.api.class.to_s}:#{path}:#{format}:#{params.inspect}:#{auth_parameters.inspect}".gsub(/ /,'')
         resp = if cache
           APICache.get(key, :cache => 61) do
             handle_github_api_bug_569(path, format) do
